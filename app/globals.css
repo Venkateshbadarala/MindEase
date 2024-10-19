@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+  font-family: "asteriod";
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  background-color: rgba(224, 216, 255, 0.3);
+}
+
+*{
+  -ms-overflow-style: none;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+@font-face {
+  font-family: 'Asteriod';
+  src: url("./assets/fonts/HarewataruSansShavian-pg9r1.ttf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.asteriod{
+  font-family: 'Asteriod';
+  letter-spacing: 0.1em;
+}
+
+@font-face {
+  font-family: 'Logo';
+  src: url("./assets/fonts/AnandaBlackPersonalUseRegular-rg9Rx.ttf") format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.logo{
+  font-family: 'Logo';
+  letter-spacing: 0.1em;
+}
