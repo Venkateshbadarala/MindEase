@@ -76,13 +76,13 @@ const Sidebar = () => {
               </Link>
         </div>
           ))}
-           <h1 className='p-2 border-t-2  text-[14px] ' >Settings</h1>
+           {/* <h1 className='p-2 border-t-2  text-[14px] ' >Settings</h1>
            <div className="relative flex items-center  gap-4 text-[18px] p-3 w-[12rem] rounded-[10px] hover:bg-slate-100 hover:border-r-[3px] border-violet-400 ">
           <SettingsSuggestRoundedIcon className="text-2xl text-black" />
           <Link href="/dashboard/settings" className="text-black">
           Settings
           </Link>
-        </div>
+        </div> */}
         </div>
         
         <div>

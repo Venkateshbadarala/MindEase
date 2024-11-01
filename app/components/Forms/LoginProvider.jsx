@@ -48,7 +48,7 @@ const LoginProvider = () => {
                     await createNewUser(user);
                 }
 
-                router.push('/adminDashboard'); // Redirect to dashboard after login
+                router.push('/dashboard'); // Redirect to dashboard after login
 
             } catch (error) {
                 console.error("Error signing in:", error.message);

@@ -66,6 +66,8 @@ const ProfileMultiStep = () => {
           toast.dismiss(toastId);
           toast.success("Form submitted successfully! 🎉");
         }
+
+        setIsEditing(false); // Disable editing after submission
         router.push('/dashboard');
       } catch (error) {
         toast.dismiss(toastId);
@@ -93,7 +95,7 @@ const ProfileMultiStep = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-screen py-10 -z-10">
+    <div className="flex flex-col items-center justify-center w-full min-h-screen py-10">
       <Toaster />
       <div className="relative p-10 bg-white rounded-lg w-full max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw]">
         <h1 className="absolute top-0 px-8 py-2 text-2xl font-bold text-white transform -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg left-1/2 bg-gradient-to-r from-purple-500 to-pink-500">
@@ -213,12 +215,19 @@ const ProfileMultiStep = () => {
         </motion.div>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8">
-          <button onClick={handleBack} disabled={step === 0} className="px-6 py-3 text-white bg-gray-500 rounded-md">
+        <div className="flex items-center justify-between mt-8">
+          <button
+            onClick={handleBack}
+            disabled={step === 0}
+            className="px-6 py-2 text-lg text-white bg-pink-600 rounded-md disabled:bg-gray-400 hover:bg-pink-700"
+          >
             Back
           </button>
-          <button onClick={handleNext} className="px-6 py-3 text-white bg-indigo-600 rounded-md">
-            {step === steps.length - 1 ? (isEditing ? "Save Changes" : "Submit") : "Next"}
+          <button
+            onClick={handleNext}
+            className="px-6 py-2 text-lg text-white bg-purple-600 rounded-md hover:bg-purple-700"
+          >
+            {step === steps.length - 1 ? "Save Changes" : "Next"}
           </button>
         </div>
       </div>

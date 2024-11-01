@@ -114,7 +114,7 @@ const Profile = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-[100vh] overflow-y-auto pt-[50%]">
-      <div className="p-8 text-center bg-white rounded-lg shadow-lg w-[30rem] x-sm:w-[20rem] -z-10">
+      <div className="p-8 text-center bg-white rounded-lg shadow-lg w-[30rem] x-sm:w-[20rem] ">
         <h1 className="mb-6 text-4xl font-bold text-violet-700">Profile</h1>
         
         <Image

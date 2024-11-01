@@ -1,4 +1,5 @@
 "use client";
+
 import React, { createContext, useState, useEffect, useContext, useCallback } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../Firebase/firebase-config";
@@ -43,6 +44,21 @@ export const AuthProvider = ({ children }) => {
     }
   }, [db]);
 
+  const logout = useCallback(async () => {
+    const confirmation = window.confirm("Are you sure you want to log out?");
+    if (confirmation && user) {
+      try {
+        await updateUserStatus(user.uid, "offline");
+        await signOut(auth);
+        setUser(null);
+        setUserData(null);
+        router.push("/login");
+      } catch (error) {
+        console.error("Error during logout:", error);
+      }
+    }
+  }, [user, router, updateUserStatus]);
+
   const checkAutoLogout = useCallback(async (userId) => {
     const userDocRef = doc(db, "users", userId);
     const docSnap = await getDoc(userDocRef);
@@ -52,7 +68,7 @@ export const AuthProvider = ({ children }) => {
         await logout();
       }
     }
-  }, [db]);
+  }, [db, logout]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -77,11 +93,9 @@ export const AuthProvider = ({ children }) => {
       if (!loading && !redirected) {
         if (user) {
           if (userData) {
-            // Redirect to dashboard if user exists in the database
             router.push("/dashboard");
           } else {
-            // Redirect to multi-step registration if user does not exist
-            router.push("/multi-step-registration");
+            router.push("/multistep");
           }
         } else {
           router.push("/login");
@@ -92,21 +106,6 @@ export const AuthProvider = ({ children }) => {
 
     redirectUser();
   }, [user, userData, loading, router, redirected]);
-
-  const logout = async () => {
-    const confirmation = window.confirm("Are you sure you want to log out?");
-    if (confirmation && user) {
-      try {
-        await updateUserStatus(user.uid, "offline");
-        await signOut(auth);
-        setUser(null);
-        setUserData(null);
-        router.push("/login");
-      } catch (error) {
-        console.error("Error during logout:", error);
-      }
-    }
-  };
 
   if (loading) return <div className="loader"></div>;
 

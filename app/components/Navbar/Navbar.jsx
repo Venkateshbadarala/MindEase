@@ -12,7 +12,7 @@ const Navbar = () => {
     const { userData } = useAuth();
 
     return (
-        <div className='flex flex-row items-center justify-between p-2 px-8'>
+        <div className='flex flex-row items-center justify-between p-2 px-8 '>
             <div className='flex flex-col items-start'>
                 <h1 className='p-4 text-2xl font-semibold text-pretty'>
                     Hello... <span className='text-2xl font-bold'>{userData?.name}</span>

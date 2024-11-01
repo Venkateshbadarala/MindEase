@@ -7,7 +7,7 @@ import { MdOutlineAudiotrack } from "react-icons/md";
 import { FaImage } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { TiDocumentAdd } from "react-icons/ti";
-import { toast } from 'react-hot-toast'; 
+import toast from 'react-hot-toast';
 import Image from 'next/image';
 
 const AddDiary = () => {
@@ -90,7 +90,9 @@ const AddDiary = () => {
       resetForm();
     } catch (error) {
       console.error('Error adding diary entry:', error.message);
-      toast.error('Error adding diary entry: ' + error.message, { id: loadingToastId });
+      toast.error(`Error adding diary entry: ${error.message}`, { id: loadingToastId });
+    } finally {
+      toast.dismiss(loadingToastId);
     }
   };
 
@@ -106,7 +108,7 @@ const AddDiary = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-[90vh]">
+    <div className="flex items-center justify-center h-[100vh] overflow-y-scroll">
       <div className="relative flex flex-col items-center justify-center w-full gap-6 p-8 rounded-lg">
         <h2 className="pb-3 text-3xl font-bold text-center text-violet-600">Add Diary Entry</h2>
 
@@ -187,7 +189,7 @@ const AddDiary = () => {
 
         {consecutiveNegDays > 0 && (
           <div className="mt-6 text-center">
-            <p className="text-red-500">You've had {consecutiveNegDays} consecutive days of negative emotions.</p>
+            <p className="text-red-500">You have had {consecutiveNegDays} consecutive days of negative emotions.</p>
             <p>{activity}</p>
             <p>{musicRecommendation}</p>
           </div>

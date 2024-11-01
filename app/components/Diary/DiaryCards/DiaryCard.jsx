@@ -6,7 +6,7 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 const DiaryCard = ({ diary, onCardClick, onLikeClick }) => {
   return (
     <Box
-      className="transition-transform transform bg-white rounded-lg shadow-lg cursor-pointer hover:shadow-xl hover:scale-103 w-[24rem] p-6"
+      className="transition-transform transform bg-white rounded-lg shadow-lg cursor-pointer hover:shadow-xl hover:scale-103 w-[24rem] p-6 "
       onClick={() => onCardClick(diary)}
       borderWidth="1px"
       borderColor="gray.200"
@@ -17,7 +17,7 @@ const DiaryCard = ({ diary, onCardClick, onLikeClick }) => {
         fontWeight="bold"
         color="blue.600"
         mb={2}
-        className='text-center'
+        className='text-2xl text-center'
       >
         {diary.title}
       </Text>

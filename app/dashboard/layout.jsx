@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
           <Sidebar />
         </div>
         <div className="flex flex-col shadow-2xl ml-[15.6rem] border border-black w-[83vw] rounded-[20px] h-[98vh] mt-3 fixed border-opacity-30 bg-white">
-          <div className="lg:fixed lg:w-[82.9vw] bg-white rounded-t-[1.6rem]   border-b-2 border-neutral-300 x-sm:w-[100vw] x-sm:flex  x-sm:rounded-b-[2rem]">
+          <div className="lg:fixed lg:w-[82.9vw] bg-white rounded-t-[1.6rem]   border-b-2 border-neutral-300 x-sm:w-[100vw] x-sm:flex  x-sm:rounded-b-[2rem] z-10">
             <Navbar />
           </div>
           <div className="pt-[3%] overflow-y-scroll">

@@ -73,7 +73,7 @@ const ViewDiaries = () => {
 
       {loading && (
         <div className="flex items-center justify-center my-4">
-          <Spinner size="xl" />
+          <Spinner size="2xl" />
         </div>
       )}
 

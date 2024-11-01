@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 
 const DiaryModal = ({ diary, isOpen, onClose }) => {
@@ -32,7 +33,7 @@ const DiaryModal = ({ diary, isOpen, onClose }) => {
           {diary.imageUrl && (
             <div className="mb-4">
               <h3 className="text-xl text-bold gray-700 font-">Image:</h3>
-              <img src={diary.imageUrl} alt="Diary entry" className="object-cover w-full h-48 transition-transform duration-200 rounded-lg shadow-md hover:scale-105" />
+              <Image src={diary.imageUrl} width={500}  height={500} alt="Diary entry" className="object-cover w-full h-48 transition-transform duration-200 rounded-lg shadow-md hover:scale-105" />
             </div>
           )}
 
