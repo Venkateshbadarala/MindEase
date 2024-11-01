@@ -9,6 +9,7 @@ import { RxCross2 } from "react-icons/rx";
 import { TiDocumentAdd } from "react-icons/ti";
 import { toast } from 'react-hot-toast'; 
 import Image from 'next/image';
+import axios from 'axios';
 
 const AddDiary = () => {
   const [content, setContent] = useState('');
@@ -76,6 +77,17 @@ const AddDiary = () => {
         const audioSnapshot = await uploadBytes(audioRef, audio);
         audioUrl = await getDownloadURL(audioSnapshot.ref);
       }
+
+      const response = await axios.post("http://127.0.0.1:5000/api/analyze-emotion", {
+        entry: content,
+        userId: user.uid,
+      });
+
+      const { emotion, consecutive_neg_days, activity, music } = response.data;
+
+      setActivity(activity);
+      setMusicRecommendation(music);
+      setConsecutiveNegDays(consecutive_neg_days);
 
       // Store the diary entry in Firestore
       await setDoc(doc(diaryCollectionRef, date), {
