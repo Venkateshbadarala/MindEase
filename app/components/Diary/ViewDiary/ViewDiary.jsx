@@ -68,8 +68,8 @@ const ViewDiaries = () => {
   };
 
   return (
-    <div className="fixed flex flex-col items-center justify-center p-6">
-      <h2 className="mb-6 font-serif text-3xl font-extrabold text-center text-white">E-Diaries List</h2>
+    <div className="flex flex-col items-center justify-center p-6">
+      
 
       {loading && (
         <div className="flex items-center justify-center my-4">

@@ -1,21 +1,22 @@
 "use client";
-import { useSession, signOut } from "next-auth/react";
+
 import { useState, useEffect } from "react";
 import Modal from "react-modal";
 import toast, { Toaster } from "react-hot-toast";
-import { updateProfile, updatePassword } from "firebase/auth"; 
+import { updateProfile, updatePassword, signOut } from "firebase/auth"; 
 import { auth, storage, db } from "../../Firebase/firebase-config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore"; 
+import { useAuth } from "../../context/Authcontext";
+import ProfileMultitask from '../ProfileMultiStep/ProfileMultiStep';
 
 if (typeof window !== "undefined") {
   Modal.setAppElement(document.body);
 }
 
 const Profile = () => {
-  const { data: session, status } = useSession(); 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -23,30 +24,32 @@ const Profile = () => {
   const [photoURL, setPhotoURL] = useState("");
   const [photoFile, setPhotoFile] = useState(null);
   
-  const isGoogleUser = session?.user?.provider === "google";
   const router = useRouter();
+  const { userData } = useAuth();
+  
+  // Check if the current user is a Google user
+  const currentUser = auth.currentUser;
+  const isGoogleUser = currentUser?.providerData.some(provider => provider.providerId === 'google.com');
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (status === "authenticated" && user) {
-      const userDocRef = doc(db, "users", user.uid); // Use user.uid
+    if (currentUser) {
+      const userDocRef = doc(db, "users", currentUser.uid);
 
       const unsubscribe = onSnapshot(userDocRef, (doc) => {
         if (doc.exists()) {
           const userData = doc.data();
-          setUsername(userData.displayName || session?.user?.name);
-          setEmail(userData.email || session?.user?.email);
-          setPhotoURL(userData.photoURL || session?.user?.image);
+          setUsername(userData.name || currentUser.displayName);
+          setEmail(userData.email || currentUser.email);
+          setPhotoURL(userData.image || currentUser.photoURL);
         }
       });
       return () => unsubscribe();
     }
-  }, [session, status]);
+  }, [currentUser]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     
-    const currentUser = auth.currentUser; 
     if (!currentUser) {
       toast.error("User is not authenticated. Please log in.");
       return;
@@ -72,9 +75,9 @@ const Profile = () => {
       // Update Firestore with new profile data
       const userDocRef = doc(db, "users", currentUser.uid);
       await updateDoc(userDocRef, {
-        displayName: username,
-        photoURL: newPhotoURL,
-        email: email, // Update email if necessary
+        name: username,
+        image: newPhotoURL,
+        email: email,
       });
 
       if (password && !isGoogleUser) {
@@ -110,9 +113,10 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="p-8 text-center bg-white rounded-lg shadow-lg">
+    <div className="flex flex-col items-center justify-center h-[100vh] overflow-y-auto pt-[50%]">
+      <div className="p-8 text-center bg-white rounded-lg shadow-lg w-[30rem] x-sm:w-[20rem] -z-10">
         <h1 className="mb-6 text-4xl font-bold text-violet-700">Profile</h1>
+        
         <Image
           src={photoURL || "https://placehold.co/300x300.png"}
           alt="Profile"
@@ -121,19 +125,19 @@ const Profile = () => {
           className="object-cover w-32 h-32 mx-auto mb-4 border-4 rounded-full border-violet-400"
         />
        
-        <h2 className="text-2xl font-semibold text-gray-700">{username}</h2>
-        <p className="text-gray-500">{email}</p>
+        <h2 className="text-2xl font-semibold text-gray-700">{username || "Loading..."}</h2>
+        <p className="text-gray-500">{email || "Loading..."}</p>
 
         <div className="flex items-center justify-center gap-10 mt-4">
           <button
-            className={`px-6 py-3 font-bold text-white bg-violet-500 rounded ${isGoogleUser ? "opacity-50 cursor-not-allowed" : "hover:bg-violet-600"}`}
+            className={`p-2 font-bold text-white bg-violet-500 rounded text-[20px] ${isGoogleUser ? "opacity-50 cursor-not-allowed" : "hover:bg-violet-600"}`}
             onClick={() => !isGoogleUser && setModalIsOpen(true)}
             disabled={isGoogleUser}
           >
             {isGoogleUser ? "Edit in Google Account" : "Edit"}
           </button>
           <button
-            className="p-2 font-bold text-black border-2 rounded border-violet-600 hover:bg-violet-600 hover:text-white"
+            className="p-2 font-bold text-black border-2 border-violet-600 rounded hover:bg-violet-600 hover:text-white text-[20px]"
             onClick={handleLogout}
           >
             Sign Out
@@ -147,7 +151,7 @@ const Profile = () => {
         className="fixed inset-0 z-50 flex items-center justify-center outline-none focus:outline-none"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50"
       >
-        <div className="relative w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg">
+        <div className="relative w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
           <button
             className="absolute text-gray-600 top-3 right-3 hover:text-gray-900 focus:outline-none"
             onClick={() => setModalIsOpen(false)}
@@ -206,7 +210,12 @@ const Profile = () => {
           </form>
         </div>
       </Modal>
+      
       <Toaster />
+      
+      {/* <div className="w-full mt-6 overflow-y-auto"> */}
+        <ProfileMultitask />
+      {/* </div> */}
     </div>
   );
 };

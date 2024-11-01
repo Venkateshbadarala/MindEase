@@ -1,6 +1,6 @@
 
 import "./globals.css";
-import SessionProvider from './context/Authcontext'
+import { AuthProvider } from "./context/Authcontext";
 import { UserProvider } from "./context/Usecontext";
 export const metadata = {
   title: "Create Next App",
@@ -12,12 +12,12 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
        
-    <SessionProvider>
+    <AuthProvider>
       <UserProvider>
        {children}
        </UserProvider>
         
-   </SessionProvider>
+   </AuthProvider>
      
      
        

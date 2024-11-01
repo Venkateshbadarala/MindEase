@@ -23,19 +23,19 @@ const cardData = [
   {
     title: "Walk",
     image: Walk, 
-    link: "/walk",
+    link: "/dashboard/walk",
     desc: "Let's Walk 🚶"
   },
   {
     title: "Games",
     image: Play, 
-    link: "/games",
+    link: "/dashboard/game",
     desc: "Time for Fun & Games 🎮"
   },
   {
     title: "Analytics",
     image: Analy, 
-    link: "/analytics",
+    link: "/dashboard/analytics",
     desc: "Track Your Progress 📊"
   },
   {

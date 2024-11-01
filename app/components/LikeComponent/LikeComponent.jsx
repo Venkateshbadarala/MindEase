@@ -66,8 +66,8 @@ const Like = () => {
   };
 
   return (
-    <div className="max-w-6xl p-6 mx-auto pt-[8%]">
-      <h2 className="mb-6 text-3xl font-bold text-center text-white">Liked Diaries</h2>
+    <div className="max-w-6xl p-6 mx-auto">
+     
 
       {loading && (
         <div className="flex items-center justify-center my-4">

@@ -3,27 +3,23 @@ import DailyStreak from '../components/DailyStreak/DailyStreak';
 import EmotionBoard from '../components/EmotionsBoard/EmotionBoard';
 import Suggestions from '../components/Suggestions/Suggestions';
 import React, { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import CardData from '../components/DailyTasks/CardData/CardData';
-import DairyList from '../components/Diary/DiaryList/DiaryList'
+import DairyList from '../components/Diary/DiaryList/DiaryList';
+import { useAuth } from '../../app/context/Authcontext';
+import ViewDiaries from '../components/Diary/ViewDiary/ViewDiary';
 
 const Dashboard = () => {
-  const { data: session, status } = useSession();
+  const { userData } = useAuth(); // use userData to check if authenticated
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'loading') return; 
-
-    if (status === 'unauthenticated') {
+    if (!userData) {
       router.push('/login'); 
-    } else if (status === 'authenticated') {
-     
-      router.push('/dashboard');
     }
-  }, [status, router]);
+  }, [userData, router]);
 
-  if (status === 'loading') {
+  if (!userData) {
     return <p>Loading...</p>;
   }
 
@@ -43,9 +39,9 @@ const Dashboard = () => {
         <h1 className='text-[2rem]'>TaskHorizon</h1>
         <CardData />
       </div>
-      <div className='flex flex-col gap-10 pt-10'>
+      <div className='flex flex-col gap-10 pt-10 h-[40vh]'>
         <h1 className='text-[2rem]'>Recent Journals</h1>
-      <DairyList/>
+        <ViewDiaries/>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import Link from 'next/link';
 const Card = ({ image, title, link, desc }) => {
   return (
     <Link href={link}>
-      <div className="flex flex-row relative justify-between items-center w-[23rem] h-[12rem] rounded-[10px] border bg-white border-violet-600 shadow-md shadow-violet-300 hover:shadow-violet-600 transition-shadow duration-300 ease-in-out p-4">
+      <div className="flex flex-row relative justify-between items-center w-[23rem] h-[12rem] rounded-[10px] border bg-white border-violet-600 shadow-md shadow-violet-300 hover:shadow-violet-600 transition-shadow duration-300 ease-in-out p-4 -z-10">
         <div className="flex-shrink-0">
           <Image
             src={image}

@@ -49,10 +49,12 @@ const AddDiary = () => {
   }, [audio]);
 
   const handleAddDiary = async () => {
+    const loadingToastId = toast.loading("Uploading diary entry...");
+
     try {
       const user = auth.currentUser;
       if (!user) {
-        alert('You must be logged in to add a diary entry.');
+        toast.error("You must be logged in to add a diary entry.", { id: loadingToastId });
         return;
       }
 
@@ -61,21 +63,18 @@ const AddDiary = () => {
       let imageUrl = '';
       let audioUrl = '';
 
-      // Start loading toast
-      const loadingToast = toast.loading("Uploading diary entry...");
-
       // Upload image to Firebase Storage
       if (image) {
         const imageRef = ref(storage, `diaries/${user.uid}/${date}/image`);
         const imageSnapshot = await uploadBytes(imageRef, image);
-        imageUrl = await getDownloadURL(imageSnapshot.ref); // Get the image URL after upload
+        imageUrl = await getDownloadURL(imageSnapshot.ref);
       }
 
       // Upload audio to Firebase Storage
       if (audio) {
         const audioRef = ref(storage, `diaries/${user.uid}/${date}/audio`);
         const audioSnapshot = await uploadBytes(audioRef, audio);
-        audioUrl = await getDownloadURL(audioSnapshot.ref); // Get the audio URL after upload
+        audioUrl = await getDownloadURL(audioSnapshot.ref);
       }
 
       // Store the diary entry in Firestore
@@ -83,28 +82,27 @@ const AddDiary = () => {
         title,
         content,
         date: new Date(date).toISOString(),
-        imageUrl, // URL of the uploaded image
-        audioUrl, // URL of the uploaded audio
+        imageUrl,
+        audioUrl,
       });
 
-      // Show success notification after the diary entry is added
-      toast.success("Diary entry added!", { id: loadingToast }); // Notify user of successful addition
-      resetForm(); // Reset the form after successful submission
+      toast.success("Diary entry added!", { id: loadingToastId });
+      resetForm();
     } catch (error) {
-      console.error('Error adding diary entry:', error.message); // Log error message
-      toast.error('Error adding diary entry: ' + error.message, { id: loadingToast }); // Show error notification
+      console.error('Error adding diary entry:', error.message);
+      toast.error('Error adding diary entry: ' + error.message, { id: loadingToastId });
     }
   };
 
   const resetForm = () => {
-    setContent(''); // Reset content state
-    setTitle(''); // Reset title state
-    setDate(currentDate); // Reset date to current date
-    setImage(null); // Clear image state
-    setAudio(null); // Clear audio state
-    setActivity(''); // Reset activity state
-    setMusicRecommendation(''); // Reset music recommendation state
-    setConsecutiveNegDays(0); // Reset consecutive negative days count
+    setContent('');
+    setTitle('');
+    setDate(currentDate);
+    setImage(null);
+    setAudio(null);
+    setActivity('');
+    setMusicRecommendation('');
+    setConsecutiveNegDays(0);
   };
 
   return (
@@ -142,7 +140,7 @@ const AddDiary = () => {
           <div className="flex items-center gap-6">
             {imagePreview && (
               <div className="relative">
-                <Image src={imagePreview} alt="Preview" className="object-cover w-20 h-20 rounded-lg shadow" />
+                <Image src={imagePreview} alt="Preview" width={500} height={500} className="object-cover w-20 h-20 rounded-lg shadow" />
                 <button
                   onClick={() => setImage(null)}
                   className="absolute p-1 bg-red-500 rounded-full top-1 right-1 hover:bg-red-600"

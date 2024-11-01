@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { Box, Typography, Button } from '@mui/material';
@@ -6,9 +5,9 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { motion } from 'framer-motion';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
-import { db } from '../../Firebase/firebase-config'
-import { doc, getDoc, setDoc, arrayUnion } from 'firebase/firestore';
-import { useSession } from "next-auth/react";
+import { useAuth } from '../../context/Authcontext';
+import { doc, collection, getDocs, addDoc } from 'firebase/firestore';
+import { auth, db } from '../../Firebase/firebase-config'; // Ensure this path is correct
 
 const generateCalendarDays = (year, month) => {
   const firstDayOfMonth = dayjs().year(year).month(month).startOf('month');
@@ -21,36 +20,58 @@ const generateCalendarDays = (year, month) => {
 };
 
 const StreakDaily = () => {
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
+  const user = auth.currentUser;
+  const userId = user ? user.uid : null; // Use uid instead of id
+  console.log("userId", userId);
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [loginDays, setLoginDays] = useState([]);
   const [calendarDays, setCalendarDays] = useState([]);
+  const [streak, setStreak] = useState(0);
 
   useEffect(() => {
-    if (userId) {
-      const fetchLoginDays = async () => {
-        try {
-          const docRef = doc(db, "users", userId);
-          const docSnap = await getDoc(docRef);
+    const fetchDiaryEntries = async () => {
+      if (!userId) return;
 
-          if (docSnap.exists()) {
-            setLoginDays(docSnap.data().loginDays.map(date => dayjs(date)));
-          } else {
-            console.log("No such document!");
-          }
-        } catch (error) {
-          console.error('Error fetching login days:', error);
+      const diaryCollectionRef = collection(doc(db, 'users', userId), 'diaries');
+      const diarySnapshot = await getDocs(diaryCollectionRef);
+
+      diarySnapshot.docs.forEach(doc => {
+        console.log(doc.data()); // Log the data to see the structure
+      });
+
+      const entries = diarySnapshot.docs.map(doc => {
+        const data = doc.data();
+        // Check the type of date and convert accordingly
+        if (data.date instanceof Date) {
+          return dayjs(data.date); // If date is a JavaScript Date object
+        } else if (data.date && data.date.toDate) {
+          return dayjs(data.date.toDate()); // If date is a Firestore Timestamp
+        } else {
+          return dayjs(data.date); // If date is a string or timestamp
         }
-      };
+      });
 
-      fetchLoginDays();
-    }
-  }, [userId]);
+      setLoginDays(entries);
+      calculateStreak(entries); // Calculate streak whenever loginDays updates
+    };
 
-  useEffect(() => {
+    fetchDiaryEntries();
     setCalendarDays(generateCalendarDays(currentDate.year(), currentDate.month()));
-  }, [currentDate]);
+  }, [currentDate, userId]);
+
+  const calculateStreak = (entries) => {
+    if (entries.length === 0) return setStreak(0);
+
+    let currentStreak = 0;
+    let checkDate = dayjs().startOf('day');
+
+    while (entries.some(entry => entry.isSame(checkDate, 'day'))) {
+      currentStreak++;
+      checkDate = checkDate.subtract(1, 'day'); // Move to the previous day
+    }
+    
+    setStreak(currentStreak);
+  };
 
   const isLoggedInDate = (date) => {
     return loginDays.some((loginDate) => loginDate.isSame(date, 'day'));
@@ -64,18 +85,20 @@ const StreakDaily = () => {
     setCurrentDate(currentDate.add(1, 'month'));
   };
 
-  const handleLogin = async () => {
+  const handleJournalEntry = async () => {
     const today = dayjs().startOf('day');
     if (!isLoggedInDate(today)) {
+      // Mark the day as a login day
       try {
-        const docRef = doc(db, "users", userId);
-        await setDoc(docRef, {
-          loginDays: arrayUnion(today.format()),
-        }, { merge: true });
-        setLoginDays([...loginDays, today]);
+        const diaryCollectionRef = collection(doc(db, 'users', userId), 'diaries');
+        await addDoc(diaryCollectionRef, { date: today.toDate() }); // Save the current date as a diary entry
+        setLoginDays([...loginDays, today]); // Update local state
+        console.log(`Journal entry made for: ${today.format('YYYY-MM-DD')}`);
       } catch (error) {
-        console.error('Error updating login streak:', error);
+        console.error("Error adding diary entry: ", error);
       }
+    } else {
+      console.log(`Journal already written for: ${today.format('YYYY-MM-DD')}`);
     }
   };
 
@@ -85,11 +108,12 @@ const StreakDaily = () => {
         p: 3,
         border: '2px solid #6b46c1',
         borderRadius: 4,
-        height: 410,
+        height: 450, // Increased height for better visibility
         width: 450,
         backgroundColor: '#ffffff',
         mx: 'auto',
         textAlign: 'center',
+        zIndex:-10
       }}
     >
       <div className='flex items-center justify-between'>
@@ -98,7 +122,7 @@ const StreakDaily = () => {
         </Typography>
 
         <Typography variant="h6" sx={{ mb: 3, color: '#ff7043', fontWeight: 'bold' }} className='flex items-center justify-center'>
-          <WhatshotIcon />: {loginDays.length}
+          <WhatshotIcon />: {streak} {/* Display the streak count */}
         </Typography>
       </div>
 
@@ -132,7 +156,7 @@ const StreakDaily = () => {
             whileTap={{ scale: 0.9 }}
             onClick={() => {
               setCurrentDate(day);
-              handleLogin();
+              handleJournalEntry();
             }}
             style={{
               display: 'flex',
